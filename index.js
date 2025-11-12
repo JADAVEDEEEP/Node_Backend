@@ -16,7 +16,7 @@ app.get('/', (req, res) => {
 
 
 app.use(bodyParser.json());
-app.use(cors());
+app.use(cors({ origin: "https://react-frontend-qgls.vercel.app",}));
 
 app.use('/auth', AuthRouter);
 app.use('/api',productRoutes)
