@@ -15,7 +15,7 @@ app.use(bodyParser.json());
 
 const allowedOrigins = [
   "http://localhost:3000",
-  "https://react-frontend-qgls.vercel.app"
+  "https://react-frontend-vakw.vercel.app"
 ];
 
 app.use(cors({
