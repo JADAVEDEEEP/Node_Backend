@@ -16,7 +16,7 @@ app.get('/', (req, res) => {
 
 
 app.use(bodyParser.json());
-app.use(cors({ origin: "http://localhost:3000" }));
+app.use(cors());
 
 app.use('/auth', AuthRouter);
 app.use('/api',productRoutes)
