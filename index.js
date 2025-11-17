@@ -1,13 +1,14 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-require('dotenv').config();
-require('./Models/db'); 
+require('dotenv').config(); // ✅ keep at the top
+require('./Models/db'); // connect to DB
 
 const productRoutes = require('./Routes/products');
 const AuthRouter = require('./Routes/AuthRouter');
 
 const app = express();
+const PORT = process.env.PORT || 8080;
 
 // Middleware
 app.use(bodyParser.json());
@@ -29,11 +30,10 @@ app.use('/api', productRoutes);
 
 // Test route
 app.get('/', (req, res) => {
-  res.send('Backend is running on Vercel 🚀');
+  res.send('Backend is running ✅');
 });
 
-// ❗ IMPORTANT — remove app.listen()
-// app.listen(PORT, () => console.log(`Server running`));
-
-// ✅ EXPORT app for Vercel serverless function
-module.exports = app;
+// Start server
+app.listen(PORT, () => {
+  console.log(`🚀 Server is running on port ${PORT}`);
+});
