@@ -85,5 +85,23 @@ const login = async (req, res) => {
     });
   }
 };
+const getUsers = async (req, res) => {
+  try {
+    const users = await UserModel.find(); // fetch all users
 
-module.exports = { signup, login };
+    return res.status(200).json({
+      success: true,
+      message: "All users fetched successfully",
+      data: users
+    });
+
+  } catch (error) {
+    console.error("Error fetching users:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Server error while fetching users",
+    });
+  }
+};
+module.exports = { signup, login,getUsers };
