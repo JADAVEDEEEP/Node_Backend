@@ -11,7 +11,7 @@ const app = express();
 
 const allowedOrigins = [
   "http://localhost:3000",
-  "https://react-frontend-vakw.vercel.app"
+  "https://react-frontend-ten-vert.vercel.app"
 ];
 
 app.use(cors({
