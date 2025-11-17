@@ -1,21 +1,21 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-require('dotenv').config(); // ✅ keep at the top
-require('./Models/db'); // connect to DB
+require('dotenv').config();
+require('./Models/db');
 
 const productRoutes = require('./Routes/products');
 const AuthRouter = require('./Routes/AuthRouter');
 
 const app = express();
-const PORT = process.env.PORT || 8080;
 
 // Middleware
 app.use(bodyParser.json());
 
 const allowedOrigins = [
   "http://localhost:3000",
-  "https://react-frontend-vakw.vercel.app"
+  "https://react-frontend-e8xi.vercel.app",
+
 ];
 
 app.use(cors({
@@ -28,12 +28,22 @@ app.use(cors({
 app.use('/auth', AuthRouter);
 app.use('/api', productRoutes);
 
-// Test route
+// Root
 app.get('/', (req, res) => {
-  res.send('Backend is running ✅');
+  res.send('Backend is running on local & vercel 🚀');
 });
 
-// Start server
-app.listen(PORT, () => {
-  console.log(`🚀 Server is running on port ${PORT}`);
-});
+// -------------------------------------------------------
+// ⚠️ IMPORTANT PART
+// Vercel must EXPORT the app, not LISTEN
+// -------------------------------------------------------
+if (require.main === module) {
+  // Only run this locally
+  const PORT = process.env.PORT || 8080;
+  app.listen(PORT, () => {
+    console.log(`🚀 Local backend running on port: ${PORT}`);
+  });
+}
+
+// For Vercel serverless
+module.exports = app;
