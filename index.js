@@ -2,20 +2,16 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 require('dotenv').config();
-require('./Models/db');
+require('../Models/db');
 
-const productRoutes = require('./Routes/products');
-const AuthRouter = require('./Routes/AuthRouter');
+const productRoutes = require('../Routes/products');
+const AuthRouter = require('../Routes/AuthRouter');
 
 const app = express();
 
-// Middleware
-app.use(bodyParser.json());
-
 const allowedOrigins = [
   "http://localhost:3000",
-  "https://react-frontend-e8xi.vercel.app",
-
+  "https://react-frontend-vakw.vercel.app"
 ];
 
 app.use(cors({
@@ -24,26 +20,23 @@ app.use(cors({
   credentials: true
 }));
 
-// Routes
+app.use(bodyParser.json());
+
 app.use('/auth', AuthRouter);
 app.use('/api', productRoutes);
 
-// Root
 app.get('/', (req, res) => {
-  res.send('Backend is running on local & vercel 🚀');
+  res.send("Backend is running 🔥");
 });
 
-// -------------------------------------------------------
-// ⚠️ IMPORTANT PART
-// Vercel must EXPORT the app, not LISTEN
-// -------------------------------------------------------
+// ✅ If running locally → Start server normally
 if (require.main === module) {
-  // Only run this locally
   const PORT = process.env.PORT || 8080;
   app.listen(PORT, () => {
-    console.log(`🚀 Local backend running on port: ${PORT}`);
+    console.log(`🚀 Local server running at http://localhost:${PORT}`);
   });
 }
 
-// For Vercel serverless
+// ❌ Vercel doesn't use listen()
+// ✅ Export for Vercel Serverless Function
 module.exports = app;
