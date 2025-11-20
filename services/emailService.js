@@ -29,4 +29,4 @@ async function sendWelcomeEmail(email, name) {
   }
 }
 
-module.exports = { sendWelcomeEmail };
+module.exports = sendWelcomeEmail
