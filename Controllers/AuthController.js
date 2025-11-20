@@ -15,10 +15,8 @@ const signup = async (req, res) => {
       });
     }
 
-  
     const hashedPassword = await bcrypt.hash(password, 10);
 
-  
     const userModel = new UserModel({
       firstName,
       lastName,
@@ -26,19 +24,25 @@ const signup = async (req, res) => {
       password: hashedPassword,
     });
 
-    await userModel.save()
-    res.status(201).json({
-      message: 'Signup successfully',
+    await userModel.save();
+
+    // 📩 SEND WELCOME EMAIL
+    await sendWelcomeEmail(email, firstName);
+
+    return res.status(201).json({
+      message: 'Signup successfully. Welcome email sent!',
       success: true,
     });
+
   } catch (err) {
     console.error(err);
-    res.status(500).json({
+    return res.status(500).json({
       message: 'Internal server error',
       success: false,
     });
   }
 };
+
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;

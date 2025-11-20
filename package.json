@@ -4,7 +4,7 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon index.js",
-    "vercel-start":"nodemon index.js"
+    "vercel-start": "nodemon index.js"
   },
   "keywords": [],
   "author": "",
@@ -19,6 +19,7 @@
     "joi": "^17.13.3",
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.20.0",
-    "mongoose": "^8.19.0"
+    "mongoose": "^8.19.0",
+    "nodemailer": "^7.0.10"
   }
 }
