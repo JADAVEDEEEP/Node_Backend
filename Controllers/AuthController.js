@@ -4,6 +4,22 @@ const UserModel = require('../Models/User');
 const sendWelcomeEmail = require('../services/emailService');
 
 
+/**
+ * ============================
+ *        SIGNUP FUNCTION
+ * ============================
+ * 🔹 SHORT EXPLANATION:
+ * This function creates a new user account, saves it to the database, and sends a welcome email.
+ *
+ * 🔹 FULL EXPLANATION:
+ * 1. Extracts user details from the request body.
+ * 2. Checks if a user with the given email already exists.
+ * 3. If yes → sends a 409 "User already exists" response.
+ * 4. If no → hashes the password using bcrypt.
+ * 5. Creates a new user and saves it in the database.
+ * 6. Sends a welcome email using the email service.
+ * 7. Finally responds with a success message and status 201.
+ */
 const signup = async (req, res) => {
   try {
     const { firstName, lastName, email, password } = req.body;
@@ -27,7 +43,7 @@ const signup = async (req, res) => {
 
     await userModel.save();
 
-    // 📩 SEND WELCOME EMAIL
+    // 📩 Send welcome email
     await sendWelcomeEmail(email, firstName);
 
     return res.status(201).json({
@@ -44,6 +60,24 @@ const signup = async (req, res) => {
   }
 };
 
+
+
+/**
+ * ============================
+ *         LOGIN FUNCTION
+ * ============================
+ * 🔹 SHORT EXPLANATION:
+ * This function validates user credentials and returns a JWT token if login is successful.
+ *
+ * 🔹 FULL EXPLANATION:
+ * 1. Reads email and password from request body.
+ * 2. Searches for a user with the given email.
+ * 3. If no user is found → sends a 404 "User not found" response.
+ * 4. Compares the provided password with the stored hashed password using bcrypt.
+ * 5. If password is incorrect → sends a 401 error.
+ * 6. If correct → generates a JWT token with user ID and email.
+ * 7. Sends back user details + token so client can stay authenticated.
+ */
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -70,12 +104,11 @@ const login = async (req, res) => {
       { expiresIn: '1h' }
     );
 
-    // ✅ Add `userId` in the response
     res.status(200).json({
       message: 'Login successful',
       token,
       user: {
-        userId: user._id, // <-- add this
+        userId: user._id,
         firstName: user.firstName,
         lastName: user.lastName,
         email: user.email,
@@ -90,6 +123,22 @@ const login = async (req, res) => {
     });
   }
 };
+
+
+
+/**
+ * ============================
+ *       GET USERS FUNCTION
+ * ============================
+ * 🔹 SHORT EXPLANATION:
+ * This function fetches all users from the database and returns them as a JSON response.
+ *
+ * 🔹 FULL EXPLANATION:
+ * 1. Calls UserModel.find() to retrieve all user records from the database.
+ * 2. If fetch is successful → sends a 200 response with user data.
+ * 3. If an error occurs → logs the error and returns a 500 server error response.
+ * 4. This function simply handles the business logic of reading all users and returning them.
+ */
 const getUsers = async (req, res) => {
   try {
     const users = await UserModel.find(); // fetch all users
@@ -109,4 +158,6 @@ const getUsers = async (req, res) => {
     });
   }
 };
-module.exports = { signup, login,getUsers };
+
+
+module.exports = { signup, login, getUsers };
