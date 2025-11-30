@@ -20,15 +20,15 @@ const upload = require("../Middleware/upload");
 
 // All routes are protected with auth middleware
 router.get('/allproducts',getAllProducts)
-//this get route will retuning the products data to the client 
+//this get route will retuning the products based on the user id to the client 
 router.get("/", auth, getProducts);
-//this get route will retuning the product data based on the id to the client 
+//this get route will retuning the product data based on product id to the client 
 router.get("/:id", auth, getProductById);
 //this post route will store products data in to the server for the client 
-router.post("/", auth,upload.single("image"), createProduct);
-//“this put route will update the products data in to the server based on id for the client”
-router.put("/:id", auth,upload.single("image"), updateProduct);
-//“this delete route will remove the products data from the server based on id for the client”
+router.post("/", auth,upload, createProduct);
+//“this put route will update the products data in to the server based on user id for the client”
+router.put("/:id", auth,upload, updateProduct);
+//“this delete route will remove the products data from the server based on user id for the client”
 router.delete("/:id", auth, deleteProduct);
  
 module.exports = router;

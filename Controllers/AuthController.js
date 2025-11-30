@@ -4,7 +4,7 @@ const UserModel = require('../Models/User');
 const sendWelcomeEmail = require('../services/emailService');
 
 
-/**
+/** ek kam kar jo valdtion he usme sab type har ek line comment amarde kiss type ke valdtion hge  
  * ============================
  *        SIGNUP FUNCTION
  * ============================
@@ -22,18 +22,24 @@ const sendWelcomeEmail = require('../services/emailService');
  */
 const signup = async (req, res) => {
   try {
+
+    // 👉 VALIDATION: Extracting data from request body
     const { firstName, lastName, email, password } = req.body;
 
+    // 👉 VALIDATION: Check if user already exists by email
     const existingUser = await UserModel.findOne({ email });
     if (existingUser) {
+      // 👉 VALIDATION: Duplicate user protection
       return res.status(409).json({
         message: 'User already exists, you can login',
         success: false,
       });
     }
 
+    // 👉 VALIDATION: Hashing password for security
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    // 👉 VALIDATION: Creating new User model object
     const userModel = new UserModel({
       firstName,
       lastName,
@@ -41,9 +47,11 @@ const signup = async (req, res) => {
       password: hashedPassword,
     });
 
+    // 👉 VALIDATION: Saving new user into the database
     await userModel.save();
 
     // 📩 Send welcome email
+    // 👉 VALIDATION: Sending confirmation/welcome email
     await sendWelcomeEmail(email, firstName);
 
     return res.status(201).json({
@@ -53,6 +61,8 @@ const signup = async (req, res) => {
 
   } catch (err) {
     console.error(err);
+
+    // 👉 VALIDATION: Error handling for server issues
     return res.status(500).json({
       message: 'Internal server error',
       success: false,
@@ -80,24 +90,31 @@ const signup = async (req, res) => {
  */
 const login = async (req, res) => {
   try {
+
+    // 👉 VALIDATION: Extract login credentials
     const { email, password } = req.body;
 
+    // 👉 VALIDATION: Check if user exists by email
     const user = await UserModel.findOne({ email });
     if (!user) {
+      // 👉 VALIDATION: User does not exist
       return res.status(404).json({
         message: 'User not found. Please register.',
         success: false,
       });
     }
 
+    // 👉 VALIDATION: Compare input password with stored hashed password
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
+      // 👉 VALIDATION: Wrong password protection
       return res.status(401).json({
         message: 'Invalid credentials',
         success: false,
       });
     }
 
+    // 👉 VALIDATION: Generate JWT token for session authentication
     const token = jwt.sign(
       { userId: user._id, email: user.email },
       process.env.JWT_SECRET || 'yourSecretKey',
@@ -115,8 +132,11 @@ const login = async (req, res) => {
       },
       success: true,
     });
+
   } catch (err) {
     console.error(err);
+
+    // 👉 VALIDATION: Internal server error during login
     res.status(500).json({
       message: 'Internal server error',
       success: false,
@@ -141,7 +161,9 @@ const login = async (req, res) => {
  */
 const getUsers = async (req, res) => {
   try {
-    const users = await UserModel.find(); // fetch all users
+
+    // 👉 VALIDATION: Fetch all users from MongoDB
+    const users = await UserModel.find();
 
     return res.status(200).json({
       success: true,
@@ -152,6 +174,7 @@ const getUsers = async (req, res) => {
   } catch (error) {
     console.error("Error fetching users:", error);
 
+    // 👉 VALIDATION: Error while fetching user list
     return res.status(500).json({
       success: false,
       message: "Server error while fetching users",
@@ -161,3 +184,17 @@ const getUsers = async (req, res) => {
 
 
 module.exports = { signup, login, getUsers };
+
+
+
+// let admin = "deepjadav123@gmail.com"
+// let pasword = "11293"
+
+// function auth(adminauth,password){
+//     if(admin===adminauth && pasword===password){
+//         console.log('Weclome Admin')
+//     }else{
+//         console.log('Invalid Credintias')
+//     }   
+// }
+//    console.log(auth('deepjadav123@gmail.com',"11293"))

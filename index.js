@@ -20,14 +20,21 @@ app.use(cors({
   credentials: true
 }));
 
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use('/auth', AuthRouter);
 app.use('/api', productRoutes);
 
-app.get('/', (req, res) => {
-  res.send("Backend is running 🔥");
+// Global Error Handler
+app.use((err, req, res, next) => {
+  console.error("🔥 Global Error Handler:", err);
+  res.status(500).json({
+    success: false,
+    message: "Internal Server Error",
+    error: err.message || "Unknown error"
+  });
 });
 
 // ✅ Render needs this (normal server)
