@@ -9,4 +9,6 @@ router.post('/signup', signupValidation, signup);
 //⭐ “this post route will check the user’s email and password and allow the client to log in if the details match.”
 router.post('/login', loginValidation, login);
 
+// router.put('/:id',)
+
 module.exports = router;
