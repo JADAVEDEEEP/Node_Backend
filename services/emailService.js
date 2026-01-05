@@ -4,10 +4,13 @@ const nodemailer = require("nodemailer");
 // Creating a transporter that will connect to Gmail and allow us to send emails
 const transporter = nodemailer.createTransport({
   service: "gmail",   // Using Gmail service to send emails
-  auth: {             
+  auth: {
     user: "jadavdeep560@gmail.com",        // Your Gmail address
     pass: "ersi xqqy lszo dgks",           // Your Gmail App Password (NOT your normal Gmail password)
   },
+   connectionTimeout: 5000, // ⏱ 5 sec
+  greetingTimeout: 5000,
+  socketTimeout: 5000,
 });
 
 // This function receives 'email' and 'name' from the register function, and the transporter uses these values inside the await to send a welcome email.

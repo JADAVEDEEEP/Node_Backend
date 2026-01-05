@@ -1,10 +1,9 @@
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-const UserModel = require('../Models/User'); 
-const sendWelcomeEmail = require('../services/emailService');
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const UserModel = require("../Models/User");
+const sendWelcomeEmail = require("../services/emailService");
 
-
-/** ek kam kar jo valdtion he usme sab type har ek line comment amarde kiss type ke valdtion hge  
+/** ek kam kar jo valdtion he usme sab type har ek line comment amarde kiss type ke valdtion hge
  * ============================
  *        SIGNUP FUNCTION
  * ============================
@@ -22,22 +21,29 @@ const sendWelcomeEmail = require('../services/emailService');
  */
 const signup = async (req, res) => {
   try {
-
     // 👉 VALIDATION: Extracting data from request body
+    console.log("1. Signup started, payload:", req.body);
     const { firstName, lastName, email, password } = req.body;
 
     // 👉 VALIDATION: Check if user already exists by email
+    console.log("2. Checking for existing user...");
     const existingUser = await UserModel.findOne({ email });
+    console.log(
+      "3. Existing user check complete:",
+      existingUser ? "Found" : "Not Found"
+    );
     if (existingUser) {
       // 👉 VALIDATION: Duplicate user protection
       return res.status(409).json({
-        message: 'User already exists, you can login',
+        message: "User already exists, you can login",
         success: false,
       });
     }
 
     // 👉 VALIDATION: Hashing password for security
+    console.log("4. Hashing password...");
     const hashedPassword = await bcrypt.hash(password, 10);
+    console.log("5. Password hashed");
 
     // 👉 VALIDATION: Creating new User model object
     const userModel = new UserModel({
@@ -48,29 +54,30 @@ const signup = async (req, res) => {
     });
 
     // 👉 VALIDATION: Saving new user into the database
+    console.log("6. Saving user to DB...");
     await userModel.save();
+    console.log("7. User saved to DB");
 
     // 📩 Send welcome email
     // 👉 VALIDATION: Sending confirmation/welcome email
-    await sendWelcomeEmail(email, firstName);
+    sendWelcomeEmail(email, firstName).catch((err) =>
+      console.error("Email failed:", err.message)
+    );
 
     return res.status(201).json({
-      message: 'Signup successfully. Welcome email sent!',
+      message: "Signup successfully. Welcome email sent!",
       success: true,
     });
-
   } catch (err) {
     console.error(err);
 
     // 👉 VALIDATION: Error handling for server issues
     return res.status(500).json({
-      message: 'Internal server error',
+      message: "Internal server error",
       success: false,
     });
   }
 };
-
-
 
 /**
  * ============================
@@ -90,7 +97,6 @@ const signup = async (req, res) => {
  */
 const login = async (req, res) => {
   try {
-
     // 👉 VALIDATION: Extract login credentials
     const { email, password } = req.body;
 
@@ -99,17 +105,20 @@ const login = async (req, res) => {
     if (!user) {
       // 👉 VALIDATION: User does not exist
       return res.status(404).json({
-        message: 'User not found. Please register.',
+        message: "User not found. Please register.",
         success: false,
       });
     }
 
     // 👉 VALIDATION: Compare input password with stored hashed password
+    // 👉 bcrypt plain text password ko internal hashing process se dobara hash-banata hai
+    // 👉 phir us new hash ko database me stored hashed password se compare karta hai
     const isMatch = await bcrypt.compare(password, user.password);
+
     if (!isMatch) {
-      // 👉 VALIDATION: Wrong password protection
+      // 👉 VALIDATION: Agar compare false de to matlab password galat hai
       return res.status(401).json({
-        message: 'Invalid credentials',
+        message: "Invalid credentials",
         success: false,
       });
     }
@@ -117,12 +126,12 @@ const login = async (req, res) => {
     // 👉 VALIDATION: Generate JWT token for session authentication
     const token = jwt.sign(
       { userId: user._id, email: user.email },
-      process.env.JWT_SECRET || 'yourSecretKey',
-      { expiresIn: '1h' }
+      process.env.JWT_SECRET || "yourSecretKey",
+      { expiresIn: "1h" }
     );
 
     res.status(200).json({
-      message: 'Login successful',
+      message: "Login successful",
       token,
       user: {
         userId: user._id,
@@ -132,19 +141,16 @@ const login = async (req, res) => {
       },
       success: true,
     });
-
   } catch (err) {
     console.error(err);
 
     // 👉 VALIDATION: Internal server error during login
     res.status(500).json({
-      message: 'Internal server error',
+      message: "Internal server error",
       success: false,
     });
   }
 };
-
-
 
 /**
  * ============================
@@ -161,16 +167,14 @@ const login = async (req, res) => {
  */
 const getUsers = async (req, res) => {
   try {
-
     // 👉 VALIDATION: Fetch all users from MongoDB
     const users = await UserModel.find();
 
     return res.status(200).json({
       success: true,
       message: "All users fetched successfully",
-      data: users
+      data: users,
     });
-
   } catch (error) {
     console.error("Error fetching users:", error);
 
@@ -182,19 +186,4 @@ const getUsers = async (req, res) => {
   }
 };
 
-
 module.exports = { signup, login, getUsers };
-
-
-
-// let admin = "deepjadav123@gmail.com"
-// let pasword = "11293"
-
-// function auth(adminauth,password){
-//     if(admin===adminauth && pasword===password){
-//         console.log('Weclome Admin')
-//     }else{
-//         console.log('Invalid Credintias')
-//     }   
-// }
-//    console.log(auth('deepjadav123@gmail.com',"11293"))

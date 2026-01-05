@@ -64,7 +64,7 @@ const auth = async (req, res, next) => {
     if (error.name === 'JsonWebTokenError') {
       return res.status(401).json({ success: false, message: 'Token is invalid' });
     }
-
+    //this names comes from the catch if token expred and there fore we pur in the validtion 
     if (error.name === 'TokenExpiredError') {
       return res.status(401).json({ success: false, message: 'Token has expired' });
     }
