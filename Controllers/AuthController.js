@@ -20,32 +20,25 @@ const sendWelcomeEmail = require("../services/emailService");
  * 7. Finally responds with a success message and status 201.
  */
 const signup = async (req, res) => {
-  try {
-    // 👉 VALIDATION: Extracting data from request body
-    console.log("1. Signup started, payload:", req.body);
-    const { firstName, lastName, email, password } = req.body;
+  const { firstName, lastName, email, password } = req.body ?? {};
 
-    // 👉 VALIDATION: Check if user already exists by email
-    console.log("2. Checking for existing user...");
+  if (!firstName || !lastName || !email || !password) {
+    return res.status(400).json({
+      message: "firstName, lastName, email, and password are required.",
+      success: false,
+    });
+  }
+
+  try {
     const existingUser = await UserModel.findOne({ email });
-    console.log(
-      "3. Existing user check complete:",
-      existingUser ? "Found" : "Not Found"
-    );
     if (existingUser) {
-      // 👉 VALIDATION: Duplicate user protection
       return res.status(409).json({
-        message: "User already exists, you can login",
+        message: "User already exists, you can login.",
         success: false,
       });
     }
 
-    // 👉 VALIDATION: Hashing password for security
-    console.log("4. Hashing password...");
     const hashedPassword = await bcrypt.hash(password, 10);
-    console.log("5. Password hashed");
-
-    // 👉 VALIDATION: Creating new User model object
     const userModel = new UserModel({
       firstName,
       lastName,
@@ -53,25 +46,25 @@ const signup = async (req, res) => {
       password: hashedPassword,
     });
 
-    // 👉 VALIDATION: Saving new user into the database
-    console.log("6. Saving user to DB...");
     await userModel.save();
-    console.log("7. User saved to DB");
 
-    // 📩 Send welcome email
-    // 👉 VALIDATION: Sending confirmation/welcome email
     sendWelcomeEmail(email, firstName).catch((err) =>
       console.error("Email failed:", err.message)
     );
 
     return res.status(201).json({
-      message: "Signup successfully. Welcome email sent!",
+      message: "Signup successful. Welcome email sent!",
       success: true,
     });
   } catch (err) {
-    console.error(err);
+    console.error("Signup error:", err);
+    if (err.code === 11000) {
+      return res.status(409).json({
+        message: "A user with that email already exists.",
+        success: false,
+      });
+    }
 
-    // 👉 VALIDATION: Error handling for server issues
     return res.status(500).json({
       message: "Internal server error",
       success: false,
