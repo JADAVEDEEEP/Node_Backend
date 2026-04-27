@@ -19,10 +19,11 @@ const upload = require("../Middleware/upload");
 //  say reqst handler function executed thr bussnes logic and find the products based on the spcefic user if prdocuts will be found there for it will send that product as rsponse to that user and client
 
 // All routes are protected with auth middleware
+// this get route will retuning all the products to the client
 router.get('/allproducts',getAllProducts)
 //this get route will retuning the products based on the user id to the client 
 router.get("/", auth, getProducts);
-//this get route will retuning the product data based on product id to the client 
+//get route will retuning the products based on the user id to the client
 router.get("/:id", auth, getProductById);
 //this post route will store products data in to the server for the client 
 router.post("/", auth,upload, createProduct);

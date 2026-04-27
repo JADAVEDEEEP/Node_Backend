@@ -20,11 +20,18 @@ const sendWelcomeEmail = require("../services/emailService");
  * 7. Finally responds with a success message and status 201.
  */
 const signup = async (req, res) => {
-  const { firstName, lastName, email, password } = req.body ?? {};
+  const { firstName, lastName, email, password, confirmPassword } = req.body ?? {};
 
   if (!firstName || !lastName || !email || !password) {
     return res.status(400).json({
       message: "firstName, lastName, email, and password are required.",
+      success: false,
+    });
+  }
+
+  if (password !== confirmPassword) {
+    return res.status(400).json({
+      message: "Password and confirm password must match.",
       success: false,
     });
   }
