@@ -28,6 +28,9 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/auth', AuthRouter);
 app.use('/api', productRoutes);
 
+app.get('/', (req, res) => {
+  res.send('Welcome to the API');
+});
 // Global Error Handler
 app.use((err, req, res, next) => {
   console.error("🔥 Global Error Handler:", err);
